@@ -1,0 +1,34 @@
+* {
+	box-sizing: border-box;
+}
+
+.App {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.information {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	max-width: 50em;
+	margin-inline: auto;
+}
+
+.information input {
+	padding: 1rem;
+	font-size: 1.75rem;
+}
+
+button {
+	padding: 1rem 2rem;
+	margin-block: 1rem;
+	display: block;
+	width: 100%;
+}
+
+button:hover {
+	cursor: pointer;
+}
