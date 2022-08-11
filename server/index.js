@@ -2,25 +2,23 @@ const express = require("express");
 const app = express();
 const mysql = require("mysql2");
 const cors = require("cors");
+require("dotenv").config();
 
 app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-	user: "root",
-	password: "12345678",
-	host: "localhost",
-	database: "employeeSystem",
+	user: process.env.DB_USER,
+	password: process.env.DB_PASS,
+	host: process.env.DB_HOST,
+	database: process.env.DB_NAME,
 });
 
 app.post("/create", (req, res) => {
-	const name = req.body.name;
-	const age = req.body.age;
-	const country = req.body.country;
-	const position = req.body.position;
-	const wage = req.body.wage;
 
-	db.query("INSERT INTO employees (name, age, country, position, wage) VALUES (?, ?, ?, ?, ?)", [name, age, country, position, wage], (err, result) => {
+	const {name, age, country, position, wage} = req.body;
+
+	db.query(`INSERT INTO employees (name, age, country, position, wage) VALUES (${name}, ${age}, ${country}, ${position}, ${wage})`, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
@@ -30,7 +28,7 @@ app.post("/create", (req, res) => {
 });
 
 app.get("/employees", (req, res) => {
-	db.query("SELECT * FROM employees ", (err, result) => {
+	db.query("SELECT * FROM employees", (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
@@ -40,9 +38,8 @@ app.get("/employees", (req, res) => {
 });
 
 app.put("/update", (req, res) => {
-	const id = req.body.id;
-	const wage = req.body.wage;
-	db.query("UPDATE employees SET wage = ? where id = ?", [wage, id], (err, result) => {
+	const {id, wage} = req.body;
+	db.query(`UPDATE employees SET wage = ${wage} where id = ${id}`, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
@@ -53,7 +50,7 @@ app.put("/update", (req, res) => {
 
 app.delete("/delete/:id", (request, response) => {
 	const id = request.params.id;
-	db.query("DELETE FROM employees WHERE id = ?", id, (err, result) => {
+	db.query(`DELETE FROM employees WHERE id = ${id}`, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {

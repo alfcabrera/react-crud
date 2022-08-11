@@ -3,20 +3,37 @@ import Axios from "axios";
 import "./App.css";
 
 function App() {
-	const [name, setName] = useState("");
-	const [age, setAge] = useState(0);
-	const [country, setCountry] = useState("");
-	const [position, setPosition] = useState("");
-	const [wage, setWage] = useState(0);
-	const [newWage, setNewWage] = useState(0);
 
-	const addEmployee = () => {
-		Axios.post("http://localhost:3001/create", { name: name, age: age, country: country, position: position, wage: wage }).then(() => {
-			setEmployeeList([...employeeList, { name: name, age: age, country: country, position: position, wage: wage }]);
-		});
-	};
+	const [form, setForm] = useState({
+		name: '',
+		age: 0,
+		country: '',
+		position: '',
+		wage: 0,
+	});
 
 	const [employeeList, setEmployeeList] = useState([]);
+	const [newWage, setNewWage] = useState(0);
+	
+	const onChange = (event) => {
+		const {name, value} = event.target;
+		setForm({... form,[name]:value});
+		console.log(form);
+	}
+
+	 
+
+	const addEmployee = async () => {
+		const {data} = await Axios.post("http://localhost:3001/create", form)
+		console.log(data)
+		setEmployeeList([...employeeList, form])
+		// Axios.post("http://localhost:3001/create", form).then(() => {
+		// 	console.log(form);
+		// 	setEmployeeList([...employeeList, form]);
+		// });
+	};
+
+	
 	const getEmployees = () => {
 		Axios.get("http://localhost:3001/employees").then((response) => {
 			setEmployeeList(response.data);
@@ -24,12 +41,14 @@ function App() {
 	};
 
 	const updateEmployeeWage = (id) => {
+		console.log(id);
 		Axios.put("http://localhost:3001/update", { wage: newWage, id: id }).then(() => {
 			setEmployeeList(
-				employeeList.map((val) => {
-					return val.id == id ? { name: val.name, age: val.age, country: val.country, position: val.position, wage: val.newWage } : val;
-				})
+				employeeList.map((val) => 
+					id == val.id ? {...employeeList[id], wage: newWage} : val
+				)
 			);
+			console.log(employeeList);
 		});
 	};
 
@@ -37,7 +56,8 @@ function App() {
 		Axios.delete(`http://localhost:3001/delete/${id}`).then(() => {
 			setEmployeeList(
 				employeeList.filter((val) => {
-					return val.id != id;
+					return val.id 
+					!= id;
 				})
 			);
 		});
@@ -49,43 +69,43 @@ function App() {
 				<label htmlFor="">Name:</label>
 				<input
 					type="text"
-					onChange={(e) => {
-						setName(e.target.value);
-					}}
+					name="name"
+					value={form.name}
+					onChange={(e) => onChange(e)}
 				/>
 				<label htmlFor="">Age:</label>
 				<input
 					type="number"
-					onChange={(e) => {
-						setAge(e.target.value);
-					}}
+					name="age"
+					value={form.age}
+					onChange={(e) => onChange(e)}
 				/>
 				<label htmlFor="">Country:</label>
 				<input
 					type="text"
-					onChange={(e) => {
-						setCountry(e.target.value);
-					}}
+					name="country"
+					value={form.country}
+					onChange={(e) => onChange(e)}
 				/>
 				<label htmlFor="">Position:</label>
 				<input
 					type="text"
-					onChange={(e) => {
-						setPosition(e.target.value);
-					}}
+					name="position"
+					value={form.position}
+					onChange={(e) => onChange(e)}
 				/>
 				<label htmlFor="">Wage (year):</label>
 				<input
 					type="number"
-					onChange={(e) => {
-						setWage(e.target.value);
-					}}
+					name="wage"
+					value={form.wage}
+					onChange={(e) => onChange(e)}
 				/>
 				<button onClick={addEmployee}>Add employee</button>
 				<button onClick={getEmployees}>Show employees</button>
 				{employeeList.map((val, key) => {
 					return (
-						<div key={val.id}>
+						<div key={key}>
 							<h3>{val.name}</h3>
 							<p>{val.age}</p>
 							<p>{val.country}</p>
